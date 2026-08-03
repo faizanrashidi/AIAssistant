@@ -42,20 +42,11 @@ class MainActivity : AppCompatActivity() {
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-    super.onCreate(savedInstanceState)
-    setContentView(R.layout.activity_main)
+        super.onCreate()
+        setContentView(R.layout.activity_main)
 
-    systemUtil = SystemControlUtil(this)
-    setupAIBrain()
-
-    val btnSetup = findViewById<Button>(R.id.btnSetupPermissions)
-
-    btnSetup.setOnClickListener {
-        requestAllPermissions()
-    }
-
-    startCoreAgentService()
-    }
+        systemUtil = SystemControlUtil(this)
+        setupAIBrain()
 
         val btnSetup = findViewById<Button>(R.id.btnSetupPermissions)
         val btnTorchOn = findViewById<Button>(R.id.btnTorchOn)
@@ -95,7 +86,7 @@ class MainActivity : AppCompatActivity() {
         val repository = MemoryRepository(db.userMemoryDao())
         
         // APNI REAL GEMINI API KEY YAHAN DALAIN
-        val apiKey = "AQ.Ab8RN6INuS3aGgfEcxGq3xfxbAgG6mVmNNR4FvurFDIoHLaukQ"
+        val apiKey = "YOUR_GEMINI_API_KEY_HERE"
         
         aiBrainManager = AIBrainManager(repository, apiKey)
     }
