@@ -86,7 +86,7 @@ class MainActivity : AppCompatActivity() {
         val repository = MemoryRepository(db.userMemoryDao())
         
         // APNI REAL GEMINI API KEY YAHAN DALAIN
-        val apiKey = "YOUR_GEMINI_API_KEY_HERE"
+        val apiKey = "AQ.Ab8RN6INuS3aGgfEcxGq3xfxbAgG6mVmNNR4FvurFDIoHLaukQ"
         
         aiBrainManager = AIBrainManager(repository, apiKey)
     }
