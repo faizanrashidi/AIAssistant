@@ -36,6 +36,9 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     
+    // Play Services Location (Geofencing & Location Reminders)
+    implementation("com.google.android.gms:play-services-location:21.1.0")
+
     // Database & Encryption
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
