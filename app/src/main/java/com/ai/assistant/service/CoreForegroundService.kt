@@ -14,7 +14,7 @@ class CoreForegroundService : Service() {
         val notification: Notification = NotificationCompat.Builder(this, AssistantApplication.CHANNEL_ID)
             .setContentTitle("AI System Agent Active")
             .setContentText("Monitoring system events & voice triggers...")
-            .setSmallIcon(R.mipmap.ic_launcher)
+            .setSmallIcon(android.R.drawable.sym_def_app_icon)
             .setOngoing(true)
             .build()
 
