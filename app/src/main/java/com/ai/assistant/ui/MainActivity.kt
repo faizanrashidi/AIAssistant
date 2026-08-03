@@ -40,14 +40,13 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this, "Permissions are required for AI Agent to work.", Toast.LENGTH_LONG).show()
             }
         }
+override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    setContentView(R.layout.activity_main)
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate()
-        setContentView(R.layout.activity_main)
-
-        systemUtil = SystemControlUtil(this)
-        setupAIBrain()
-    }
+    systemUtil = SystemControlUtil(this)
+    setupAIBrain() 
+    
     val btnSetup = findViewById<Button>(R.id.btnSetupPermissions)
     val btnTorchOn = findViewById<Button>(R.id.btnTorchOn)
     val btnTorchOff = findViewById<Button>(R.id.btnTorchOff)
@@ -55,41 +54,42 @@ class MainActivity : AppCompatActivity() {
     val etUserPrompt = findViewById<EditText>(R.id.etUserPrompt)
     val tvAiResponse = findViewById<TextView>(R.id.tvAiResponse)
 
-btnSetup.setOnClickListener {
-    requestAllPermissions()
-}
-
-btnTorchOn.setOnClickListener {
-    try {
-        systemUtil.setTorch(true)
-    } catch (e: Exception) {
-        Toast.makeText(this, e.message, Toast.LENGTH_SHORT).show()
+    btnSetup.setOnClickListener {
+        requestAllPermissions()
     }
-}
 
-btnTorchOff.setOnClickListener {
-    try {
-        systemUtil.setTorch(false)
-    } catch (e: Exception) {
-        Toast.makeText(this, e.message, Toast.LENGTH_SHORT).show()
-    }
-}
-
-btnSendToAI.setOnClickListener {
-    val prompt = etUserPrompt.text.toString().trim()
-
-    if (prompt.isNotEmpty()) {
-        tvAiResponse.text = "AI Process Kar Raha Hai..."
-
-        lifecycleScope.launch {
-            val response = aiBrainManager.processUserQuery(prompt)
-            tvAiResponse.text = response
-            etUserPrompt.setText("")
+    btnTorchOn.setOnClickListener {
+        try {
+            systemUtil.setTorch(true)
+        } catch (e: Exception) {
+            Toast.makeText(this, e.message, Toast.LENGTH_SHORT).show()
         }
     }
-}
 
-startCoreAgentService()
+    btnTorchOff.setOnClickListener {
+        try {
+            systemUtil.setTorch(false)
+        } catch (e: Exception) {
+            Toast.makeText(this, e.message, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    btnSendToAI.setOnClickListener {
+        val prompt = etUserPrompt.text.toString().trim()
+
+        if (prompt.isNotEmpty()) {
+            tvAiResponse.text = "AI Process Kar Raha Hai..."
+
+            lifecycleScope.launch {
+                val response = aiBrainManager.processUserQuery(prompt)
+                tvAiResponse.text = response
+                etUserPrompt.setText("")
+            }
+        }
+    }
+
+    startCoreAgentService()
+}
     private fun setupAIBrain() {
         val passphrase = "MySecureEncryptionKey123".toByteArray()
         val db = EncryptedAppDatabase.getDatabase(this, passphrase)
