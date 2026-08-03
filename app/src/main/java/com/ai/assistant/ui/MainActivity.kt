@@ -27,6 +27,7 @@ import android.speech.tts.TextToSpeech
 import android.telecom.TelecomManager
 import android.telephony.PhoneStateListener
 import android.telephony.TelephonyManager
+import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
@@ -36,7 +37,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
-// Import your app resources
 import com.ai.assistant.R
 import com.ai.assistant.ai.AIBrainManager
 import com.ai.assistant.data.local.EncryptedAppDatabase
@@ -94,24 +94,27 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener, SensorEve
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState) // Fixed parameter issue
+        super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        // Safe Initialization Block
         try {
             systemUtil = SystemControlUtil(this)
-            telecomManager = getSystemService(Context.TELECOM_SERVICE) as TelecomManager
-            audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
+            audioManager = getSystemService(Context.AUDIO_SERVICE) as? AudioManager
             locationReminderManager = LocationReminderManager(this)
+
+            try {
+                telecomManager = getSystemService(Context.TELECOM_SERVICE) as? TelecomManager
+                setupCallListener()
+            } catch (e: Exception) {
+                Log.e("MainActivity", "Call listener init skipped: ${e.message}")
+            }
 
             setupAIBrain()
             textToSpeech = TextToSpeech(this, this)
             setupSpeechRecognizer()
-            setupCallListener()
 
-            sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
-            sensorManager?.registerListener(this, sensorManager?.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL)
-            accelCurrent = SensorManager.GRAVITY_EARTH
-            accelLast = SensorManager.GRAVITY_EARTH
+            setupSensorManager()
 
             val filter = IntentFilter("com.ai.assistant.READ_NOTIFICATION")
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -121,6 +124,7 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener, SensorEve
             }
 
         } catch (e: Exception) {
+            Log.e("MainActivity", "Init Error", e)
             Toast.makeText(this, "Init Exception: ${e.localizedMessage}", Toast.LENGTH_LONG).show()
         }
 
@@ -148,6 +152,20 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener, SensorEve
 
         if (intent.getBooleanExtra("START_VOICE", false)) {
             startVoiceInput()
+        }
+    }
+
+    private fun setupSensorManager() {
+        try {
+            sensorManager = getSystemService(Context.SENSOR_SERVICE) as? SensorManager
+            val accelSensor = sensorManager?.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
+            if (accelSensor != null) {
+                sensorManager?.registerListener(this, accelSensor, SensorManager.SENSOR_DELAY_NORMAL)
+                accelCurrent = SensorManager.GRAVITY_EARTH
+                accelLast = SensorManager.GRAVITY_EARTH
+            }
+        } catch (e: Exception) {
+            Log.e("MainActivity", "Sensor error: ${e.message}")
         }
     }
 
@@ -328,15 +346,17 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener, SensorEve
     }
 
     private fun setupCallListener() {
-        val telephonyManager = getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
-        telephonyManager.listen(object : PhoneStateListener() {
-            override fun onCallStateChanged(state: Int, incomingNumber: String?) {
-                if (state == TelephonyManager.CALL_STATE_RINGING) {
-                    awaitingCallDecision = true
-                    speakOut("Call aa rahi hai. Receive karun ya reject karun?")
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED) {
+            val telephonyManager = getSystemService(Context.TELEPHONY_SERVICE) as? TelephonyManager
+            telephonyManager?.listen(object : PhoneStateListener() {
+                override fun onCallStateChanged(state: Int, incomingNumber: String?) {
+                    if (state == TelephonyManager.CALL_STATE_RINGING) {
+                        awaitingCallDecision = true
+                        speakOut("Call aa rahi hai. Receive karun ya reject karun?")
+                    }
                 }
-            }
-        }, PhoneStateListener.LISTEN_CALL_STATE)
+            }, PhoneStateListener.LISTEN_CALL_STATE)
+        }
     }
 
     @SuppressLint("MissingPermission")
@@ -350,25 +370,29 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener, SensorEve
     }
 
     private fun setupSpeechRecognizer() {
-        speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this)
-        speechRecognizer?.setRecognitionListener(object : RecognitionListener {
-            override fun onReadyForSpeech(params: Bundle?) {}
-            override fun onBeginningOfSpeech() {}
-            override fun onRmsChanged(rmsdB: Float) {}
-            override fun onBufferReceived(buffer: ByteArray?) {}
-            override fun onEndOfSpeech() {}
-            override fun onError(error: Int) {}
-            override fun onResults(results: Bundle?) {
-                val matches = results?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
-                if (!matches.isNullOrEmpty()) {
-                    val text = matches[0]
-                    findViewById<EditText>(R.id.etUserPrompt)?.setText(text)
-                    handleUserCommand(text, findViewById(R.id.tvAiResponse), findViewById(R.id.etUserPrompt))
+        try {
+            speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this)
+            speechRecognizer?.setRecognitionListener(object : RecognitionListener {
+                override fun onReadyForSpeech(params: Bundle?) {}
+                override fun onBeginningOfSpeech() {}
+                override fun onRmsChanged(rmsdB: Float) {}
+                override fun onBufferReceived(buffer: ByteArray?) {}
+                override fun onEndOfSpeech() {}
+                override fun onError(error: Int) {}
+                override fun onResults(results: Bundle?) {
+                    val matches = results?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
+                    if (!matches.isNullOrEmpty()) {
+                        val text = matches[0]
+                        findViewById<EditText>(R.id.etUserPrompt)?.setText(text)
+                        handleUserCommand(text, findViewById(R.id.tvAiResponse), findViewById(R.id.etUserPrompt))
+                    }
                 }
-            }
-            override fun onPartialResults(partialResults: Bundle?) {}
-            override fun onEvent(eventType: Int, params: Bundle?) {}
-        })
+                override fun onPartialResults(partialResults: Bundle?) {}
+                override fun onEvent(eventType: Int, params: Bundle?) {}
+            })
+        } catch (e: Exception) {
+            Log.e("MainActivity", "SpeechRecognizer error: ${e.message}")
+        }
     }
 
     private fun startVoiceInput() {
@@ -417,17 +441,25 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener, SensorEve
     }
 
     private fun startCoreAgentService() {
-        val intent = Intent(this, CoreForegroundService::class.java)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            ContextCompat.startForegroundService(this, intent)
-        } else {
-            startService(intent)
+        try {
+            val intent = Intent(this, CoreForegroundService::class.java)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                ContextCompat.startForegroundService(this, intent)
+            } else {
+                startService(intent)
+            }
+        } catch (e: Exception) {
+            Log.e("MainActivity", "Service Start Error: ${e.message}")
         }
     }
 
     override fun onDestroy() {
         sensorManager?.unregisterListener(this)
-        unregisterReceiver(notificationReceiver)
+        try {
+            unregisterReceiver(notificationReceiver)
+        } catch (e: Exception) {
+            // Receiver not registered ignore
+        }
         speechRecognizer?.destroy()
         textToSpeech?.stop()
         textToSpeech?.shutdown()
