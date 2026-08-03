@@ -1,63 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+    package="com.ai.assistant">
 
-    <!-- System & Accessibility Permissions -->
-    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
-    
-    
-    <!-- Background & Services -->
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
-    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-    
-    <!-- Hardware & Communication -->
-    <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.RECORD_AUDIO" />
-    <uses-permission android:name="android.permission.CALL_PHONE" />
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
-    
-    <!-- Network & Storage -->
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <!-- Permissions -->
+    <uses-permission android:permission="android.permission.CAMERA" />
+    <uses-permission android:permission="android.permission.RECORD_AUDIO" />
+    <uses-permission android:permission="android.permission.CALL_PHONE" />
+    <uses-permission android:permission="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:permission="android.permission.ANSWER_PHONE_CALLS" />
+    <uses-permission android:permission="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:permission="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:permission="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:permission="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:permission="android.permission.ACCESS_BACKGROUND_LOCATION" />
+    <uses-permission android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE" />
 
     <application
-        android:name=".AssistantApplication"
-        android:allowBackup="false"
-        android:label="AI System Agent"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="AI Voice Assistant"
+        android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.AIAssistant">
+        android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
 
-        <!-- Main UI Activity -->
+        <!-- Main Activity -->
         <activity
             android:name=".ui.MainActivity"
-            android:exported="true">
+            android:exported="true"
+            android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <!-- 1. Accessibility Service for UI Reading & Auto Touch -->
+        <!-- Foreground Service -->
         <service
-            android:name=".service.AutomationAccessibilityService"
-            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.accessibilityservice.AccessibilityService" />
-            </intent-filter>
-            <meta-data
-                android:name="android.accessibilityservice"
-                android:resource="@xml/accessibility_service_config" />
-        </service>
+            android:name=".service.CoreForegroundService"
+            android:enabled="true"
+            android:exported="false" />
 
-        <!-- 2. Notification Listener Service -->
+        <!-- Notification Listener Service -->
         <service
-            android:name=".service.AgentNotificationService"
-            android:label="Notification Assistant"
+            android:name=".service.NotificationReaderService"
+            android:label="AI Notification Reader"
             android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE"
             android:exported="true">
             <intent-filter>
@@ -65,21 +51,12 @@
             </intent-filter>
         </service>
 
-        <!-- 3. Persistent Core Foreground Service -->
-        <service
-            android:name=".service.CoreForegroundService"
-            android:foregroundServiceType="specialUse"
-            android:exported="false" />
-
-        <!-- Boot Receiver for Auto-Start -->
+        <!-- Geofence Broadcast Receiver -->
         <receiver
-            android:name=".receiver.BootReceiver"
+            android:name=".receiver.GeofenceBroadcastReceiver"
             android:enabled="true"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-            </intent-filter>
-        </receiver>
+            android:exported="true" />
 
     </application>
+
 </manifest>
