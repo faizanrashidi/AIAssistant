@@ -36,6 +36,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
+// Import your app resources
 import com.ai.assistant.R
 import com.ai.assistant.ai.AIBrainManager
 import com.ai.assistant.data.local.EncryptedAppDatabase
@@ -93,7 +94,7 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener, SensorEve
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate()
+        super.onCreate(savedInstanceState) // Fixed parameter issue
         setContentView(R.layout.activity_main)
 
         try {
@@ -160,7 +161,6 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener, SensorEve
     private fun handleUserCommand(prompt: String, tvAiResponse: TextView?, etUserPrompt: EditText?) {
         val lowerText = prompt.lowercase()
 
-        // 1. Location Reminder Command
         if (lowerText.contains("location reminder") || lowerText.contains("jagah par yaad")) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_BACKGROUND_LOCATION), 101)
@@ -180,7 +180,6 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener, SensorEve
             return
         }
 
-        // 2. Camera Vision AI Trigger
         if (lowerText.contains("dekho") || lowerText.contains("scan") || lowerText.contains("photo khincho")) {
             speakOut("Camera open kar raha hoon.")
             openCameraForVision()
@@ -188,7 +187,6 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener, SensorEve
             return
         }
 
-        // 3. Call Actions
         if (awaitingCallDecision) {
             if (lowerText.contains("receive") || lowerText.contains("uthai")) {
                 acceptIncomingCall()
@@ -201,14 +199,12 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener, SensorEve
             return
         }
 
-        // 4. WhatsApp Messaging
         if (lowerText.contains("whatsapp") && (lowerText.contains("message") || lowerText.contains("bhejo"))) {
             sendWhatsAppMessage(lowerText)
             etUserPrompt?.setText("")
             return
         }
 
-        // 5. Play YouTube
         if (lowerText.contains("play") || lowerText.contains("youtube par")) {
             val query = lowerText.replace("play", "").replace("youtube par", "").replace("chalo", "").trim()
             playOnYouTube(query)
@@ -216,7 +212,6 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener, SensorEve
             return
         }
 
-        // 6. Direct Call
         if (lowerText.contains("call karo") || lowerText.contains("dial")) {
             val number = lowerText.replace("[^0-9]".toRegex(), "")
             if (number.isNotEmpty()) makePhoneCall(number) else speakOut("Number nahi mila.")
@@ -224,14 +219,12 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener, SensorEve
             return
         }
 
-        // 7. Battery Check
         if (lowerText.contains("battery")) {
             checkBatteryStatus()
             etUserPrompt?.setText("")
             return
         }
 
-        // 8. Volume Control
         if (lowerText.contains("volume up") || lowerText.contains("aawaz badhao")) {
             adjustVolume(true)
             etUserPrompt?.setText("")
@@ -242,7 +235,6 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener, SensorEve
             return
         }
 
-        // 9. Standard AI Processing
         tvAiResponse?.text = "AI Thinking..."
         lifecycleScope.launch {
             try {
@@ -256,7 +248,6 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener, SensorEve
         }
     }
 
-    // --- SHAKE TO WAKE SENSOR ---
     override fun onSensorChanged(event: SensorEvent?) {
         if (event == null) return
         val x = event.values[0]
@@ -276,7 +267,6 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener, SensorEve
 
     override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}
 
-    // --- UTILITY METHODS ---
     private fun openCameraForVision() {
         val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         if (cameraIntent.resolveActivity(packageManager) != null) {
