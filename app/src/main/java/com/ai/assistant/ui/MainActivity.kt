@@ -390,7 +390,7 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener, SensorEve
     private fun setupAIBrain() {
         val db = EncryptedAppDatabase.getDatabase(applicationContext, "MyKey123".toByteArray())
         val repository = MemoryRepository(db.userMemoryDao())
-        val apiKey = "YOUR_GEMINI_API_KEY_HERE"
+        val apiKey = "AQ.Ab8RN6JylhFFux9CbQCUxCFQfdocDQnRVydsX8d5TqxJkbLiyA"
         aiBrainManager = AIBrainManager(repository, apiKey)
     }
 
