@@ -47,7 +47,7 @@ class MainActivity : AppCompatActivity() {
 
         systemUtil = SystemControlUtil(this)
         setupAIBrain()
-
+    }
     val btnSetup = findViewById<Button>(R.id.btnSetupPermissions)
     val btnTorchOn = findViewById<Button>(R.id.btnTorchOn)
     val btnTorchOff = findViewById<Button>(R.id.btnTorchOff)
