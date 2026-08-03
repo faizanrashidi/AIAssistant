@@ -1,19 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.ai.assistant">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- Permissions -->
-    <uses-permission android:permission="android.permission.CAMERA" />
-    <uses-permission android:permission="android.permission.RECORD_AUDIO" />
-    <uses-permission android:permission="android.permission.CALL_PHONE" />
-    <uses-permission android:permission="android.permission.READ_PHONE_STATE" />
-    <uses-permission android:permission="android.permission.ANSWER_PHONE_CALLS" />
-    <uses-permission android:permission="android.permission.SYSTEM_ALERT_WINDOW" />
-    <uses-permission android:permission="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:permission="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:permission="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:permission="android.permission.ACCESS_BACKGROUND_LOCATION" />
-    <uses-permission android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE" />
+    <!-- Corrected Permissions with android:name -->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.CALL_PHONE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.ANSWER_PHONE_CALLS" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+    <uses-permission android:name="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE" />
 
     <application
         android:allowBackup="true"
