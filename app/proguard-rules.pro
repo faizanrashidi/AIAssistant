@@ -1,0 +1,3 @@
+-keep class net.zetetic.database.sqlcipher.** { *; }
+-keep class androidx.room.** { *; }
+-dontwarn net.zetetic.database.sqlcipher.**

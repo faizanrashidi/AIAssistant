@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">AI System Agent</string>
+    <string name="accessibility_description">AI Assistant relies on this service to read UI elements and perform system automation tasks.</string>
+</resources>
