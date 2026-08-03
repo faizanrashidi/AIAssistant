@@ -42,11 +42,20 @@ class MainActivity : AppCompatActivity() {
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate()
-        setContentView(R.layout.activity_main)
+    super.onCreate(savedInstanceState)
+    setContentView(R.layout.activity_main)
 
-        systemUtil = SystemControlUtil(this)
-        setupAIBrain()
+    systemUtil = SystemControlUtil(this)
+    setupAIBrain()
+
+    val btnSetup = findViewById<Button>(R.id.btnSetupPermissions)
+
+    btnSetup.setOnClickListener {
+        requestAllPermissions()
+    }
+
+    startCoreAgentService()
+    }
 
         val btnSetup = findViewById<Button>(R.id.btnSetupPermissions)
         val btnTorchOn = findViewById<Button>(R.id.btnTorchOn)
