@@ -27,7 +27,6 @@
     <application
         android:name=".AssistantApplication"
         android:allowBackup="false"
-        android:icon="@mipmap/ic_launcher"
         android:label="AI System Agent"
         android:supportsRtl="true"
         android:theme="@style/Theme.AIAssistant">
