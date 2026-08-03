@@ -16,6 +16,7 @@ import android.view.View
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
+// App Resources Import
 import com.ai.assistant.R
 import com.ai.assistant.ui.MainActivity
 
