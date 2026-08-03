@@ -4,8 +4,7 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import net.zetetic.database.sqlcipher.SupportOpenHelperFactory
-
+import net.sqlcipher.database.SupportFactory
 @Database(entities = [UserMemoryEntity::class], version = 1, exportSchema = false)
 abstract class EncryptedAppDatabase : RoomDatabase() {
 
@@ -18,9 +17,9 @@ abstract class EncryptedAppDatabase : RoomDatabase() {
         fun getDatabase(context: Context, encryptionPassphrase: ByteArray): EncryptedAppDatabase {
             return INSTANCE ?: synchronized(this) {
                 // SQLCipher OpenHelper Factory Passphrase ke saath
-                val factory = SupportOpenHelperFactory(encryptionPassphrase)
+                val factory = SupportFactory(encryptionPassphrase)
 
-                val instance = Room.databaseBuilder(
+                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     EncryptedAppDatabase::class.java,
                     "secure_ai_memory.db"
